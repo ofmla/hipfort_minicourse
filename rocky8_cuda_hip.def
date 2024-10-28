@@ -1,0 +1,68 @@
+Bootstrap: docker
+From: nvidia/cuda:12.0.1-devel-rockylinux8
+
+%arguments
+  nprocs=4
+
+%post
+  # Variables to make updates easier
+  ver=6.1.3
+
+  # Ensure UTF-8 for build time
+  export LC_ALL="C.UTF-8"
+  export LANG="C.UTF-8"
+
+  # Base update, various useful packages and dependencies 
+  dnf -y update && \
+  dnf install -y wget git vim cmake gcc gcc-c++ gcc-gfortran 'dnf-command(config-manager)' sudo && \
+  #dnf install -y epel-release tar git vim cmake sudo autoconf automake libtool gcc gcc-c++ binutils pkgconf pkgconf-m4 pkgconf-pkg-config perl-interpreter perl-IPC-Cmd perl-Pod-Html perl-Module-Load-Conditional perl-Test-Harness perl-CPAN && \
+  #dnf --enablerepo=devel install -y procps-ng && \
+  dnf -y clean all --enablerepo=\* && \
+  rm -rf /var/cache/dnf /var/cache/yum && \
+
+  # install HIP
+  wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+  sudo rpm -ivh epel-release-latest-8.noarch.rpm && \
+  sudo crb enable && \
+  
+sudo tee --append /etc/yum.repos.d/rocm.repo <<EOF
+[ROCm-$ver]
+name=ROCm$ver
+baseurl=https://repo.radeon.com/rocm/rhel8/$ver/main
+enabled=1
+priority=50
+gpgcheck=1
+gpgkey=https://repo.radeon.com/rocm/rocm.gpg.key
+EOF
+  sudo yum clean all && \
+  sudo yum install -y rocm-hip-sdk && \
+  
+sudo tee --append /etc/ld.so.conf.d/rocm.conf <<EOF
+/opt/rocm/lib
+/opt/rocm/lib64
+EOF
+  ldconfig && \
+  echo "export PATH=\$PATH:/opt/rocm-5.3.2/bin" >> ~/.bash_profile && \
+
+  git clone https://github.com/ROCmSoftwarePlatform/hipfort && \
+  cd hipfort && \
+  FC=gfortran cmake -B _build -DHIPFORT_INSTALL_DIR=/usr/local/hipfort && \
+  cmake --build _build && \
+  cmake --install _build && \
+  cd .. && \
+  rm -rf hipfort && \
+
+  # Fix $PS1 prompt
+  echo 'export PS1="<${APPTAINER_NAME}>[\u@\h \W]\$ "' >> /.singularity.d/env/999-zzz.sh && \
+  chmod 755 /.singularity.d/env/999-zzz.sh
+
+%environment
+  export LC_ALL="C.UTF-8"
+  export LANG="C.UTF-8"
+
+%labels
+  Author Oscar Mojica <oscar.ladino@fieb.org.br>
+  Version v0.0.1
+
+%help
+  This container is designed to support the siren project cuda development
