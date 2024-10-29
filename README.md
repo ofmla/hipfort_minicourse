@@ -38,7 +38,7 @@ $ cd path_to_folder_with_apptainer_image
 ```
 ### Run the container
 
-To run all the codes from the apptainer image use
+To run all the codes from the apptainer image use (note the use of the [--nv option](https://apptainer.org/docs/user/1.0/gpu.html#nvidia-gpus-cuda-standard))
 
 ```shell
 $ apptainer shell --nv container_hipfort_minicourse.sif
