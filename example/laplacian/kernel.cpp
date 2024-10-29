@@ -34,32 +34,32 @@ __global__ void laplacian_kernel(float *f, float *u,
     int i = pad + (blockIdx.x * blockDim.x + threadIdx.x); 
     int j = pad + (blockIdx.y * blockDim.y + threadIdx.y); 
     int k = pad + (blockIdx.z * blockDim.z + threadIdx.z);
-    float dsxxm = 0.0, dsyym = 0.0, dszzm = 0.0;
+    float derivx = 0.0, derivy = 0.0, derivz = 0.0;
     
     // Compute the result of the stencil operation
     if(i < nz - pad){
         if(j < nx - pad){ 
             if(k < ny - pad){
             int dim_y = j * nz;
-            dszzm += cz[0] * u[i+(dim_y)+(k*slice)];
-            dszzm += cz[1] * (u[(i+1)+(dim_y)+(k*slice)] + u[(i-1)+(dim_y)+(k*slice)]);
-            dszzm += cz[2] * (u[(i+2)+(dim_y)+(k*slice)] + u[(i-2)+(dim_y)+(k*slice)]);
-            dszzm += cz[3] * (u[(i+3)+(dim_y)+(k*slice)] + u[(i-3)+(dim_y)+(k*slice)]);
-            dszzm += cz[4] * (u[(i+4)+(dim_y)+(k*slice)] + u[(i-4)+(dim_y)+(k*slice)]);
+            derivz += cz[0] * u[i+(dim_y)+(k*slice)];
+            derivz += cz[1] * (u[(i+1)+(dim_y)+(k*slice)] + u[(i-1)+(dim_y)+(k*slice)]);
+            derivz += cz[2] * (u[(i+2)+(dim_y)+(k*slice)] + u[(i-2)+(dim_y)+(k*slice)]);
+            derivz += cz[3] * (u[(i+3)+(dim_y)+(k*slice)] + u[(i-3)+(dim_y)+(k*slice)]);
+            derivz += cz[4] * (u[(i+4)+(dim_y)+(k*slice)] + u[(i-4)+(dim_y)+(k*slice)]);
 
-            dsxxm += cz[0] * u[i+(dim_y)+(k*slice)]; 
-            dsxxm += cx[1] * (u[i+((j+1)* nz)+(k*slice)] + u[i+((j-1)* nz)+(k*slice)]); 
-            dsxxm += cx[2] * (u[i+((j+2)* nz)+(k*slice)] + u[i+((j-2)* nz)+(k*slice)]); 
-            dsxxm += cx[3] * (u[i+((j+3)* nz)+(k*slice)] + u[i+((j-3)* nz)+(k*slice)]); 
-            dsxxm += cx[4] * (u[i+((j+4)* nz)+(k*slice)] + u[i+((j-4)* nz)+(k*slice)]);
+            derivx += cz[0] * u[i+(dim_y)+(k*slice)]; 
+            derivx += cx[1] * (u[i+((j+1)* nz)+(k*slice)] + u[i+((j-1)* nz)+(k*slice)]); 
+            derivx += cx[2] * (u[i+((j+2)* nz)+(k*slice)] + u[i+((j-2)* nz)+(k*slice)]); 
+            derivx += cx[3] * (u[i+((j+3)* nz)+(k*slice)] + u[i+((j-3)* nz)+(k*slice)]); 
+            derivx += cx[4] * (u[i+((j+4)* nz)+(k*slice)] + u[i+((j-4)* nz)+(k*slice)]);
 
-            dsyym += cy[0] * u[i+(dim_y)+(k*slice)];  
-            dsyym += cy[1] * (u[i+(dim_y)+((k+1)*slice)] + u[i+(dim_y)+((k-1)*slice)]); 
-            dsyym += cy[2] * (u[i+(dim_y)+((k+2)*slice)] + u[i+(dim_y)+((k-2)*slice)]); 
-            dsyym += cy[3] * (u[i+(dim_y)+((k+3)*slice)] + u[i+(dim_y)+((k-3)*slice)]); 
-            dsyym += cy[4] * (u[i+(dim_y)+((k+4)*slice)] + u[i+(dim_y)+((k-4)*slice)]);
+            derivy += cy[0] * u[i+(dim_y)+(k*slice)];  
+            derivy += cy[1] * (u[i+(dim_y)+((k+1)*slice)] + u[i+(dim_y)+((k-1)*slice)]); 
+            derivy += cy[2] * (u[i+(dim_y)+((k+2)*slice)] + u[i+(dim_y)+((k-2)*slice)]); 
+            derivy += cy[3] * (u[i+(dim_y)+((k+3)*slice)] + u[i+(dim_y)+((k-3)*slice)]); 
+            derivy += cy[4] * (u[i+(dim_y)+((k+4)*slice)] + u[i+(dim_y)+((k-4)*slice)]);
 
-            f[i+(dim_y)+(k*slice)] = dszzm+dsxxm+dsyym;
+            f[i+(dim_y)+(k*slice)] = derivz + derivx + derivy;
             } 
         }
     }
