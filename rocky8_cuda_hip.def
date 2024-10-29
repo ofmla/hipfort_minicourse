@@ -32,20 +32,14 @@ priority=50
 gpgcheck=1
 gpgkey=https://repo.radeon.com/rocm/rocm.gpg.key
 EOF
-  sudo yum clean all && \
-  sudo yum install -y rocm-hip-sdk && \
-  
-sudo tee --append /etc/ld.so.conf.d/rocm.conf <<EOF
-/opt/rocm/lib
-/opt/rocm/lib64
-EOF
-  ldconfig && \
-  echo "export PATH=\$PATH:/opt/rocm-5.3.2/bin" >> ~/.bash_profile && \
+  sudo dnf clean all && \
+  sudo dnf install -y rocm-hip-sdk && \
 
+# install hipfort from source
   git clone https://github.com/ROCmSoftwarePlatform/hipfort && \
   cd hipfort && \
   FC=gfortran cmake -B _build -DHIPFORT_INSTALL_DIR=/usr/local/hipfort && \
-  cmake --build _build && \
+  cmake --build _build --parallel {{ nprocs }} && \
   cmake --install _build && \
   cd .. && \
   rm -rf hipfort && \
