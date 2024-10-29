@@ -10,7 +10,7 @@ program main
     real, parameter :: c3 =  8./315.,  c4 = -1./560.
     real, allocatable :: u(:,:,:), f(:,:,:) 
     real :: hx, hy, hz, expected_f
-    integer :: i, j, k, count, pos
+    integer :: i, j, k, count
 
     hx = 1.0 / (nx - 1);
     hy = 1.0 / (ny - 1);
@@ -56,7 +56,6 @@ subroutine test_function_kernel(u, nx, ny, nz, hx, hy, hz)
   real, dimension(nz,nx,ny), intent (out) :: u
   integer :: i, j, k
   real:: c, x, y, z, lx, ly, lz
-  integer :: pos
   
   c = 0.5
   lx = nx * hx
@@ -67,7 +66,6 @@ subroutine test_function_kernel(u, nx, ny, nz, hx, hy, hz)
   do k = 1,ny
     do j = 1,nx
        do i = 1,nz
-          pos = i + nz * ((j - 1) + nx * (k - 1))
           ! Compute x, y, z based on grid indices
           y = (k - 1) * hy
           x = (j - 1) * hx
@@ -110,7 +108,7 @@ subroutine laplacian(f, u, nx, ny, nz, hx, hy, hz)
                    c4x * (u(i,j+4,k) + u(i,j-4,k)) + &
                    c1y * (u(i,j,k+1) + u(i,j,k-1)) + &
                    c2y * (u(i,j,k+2) + u(i,j,k-2)) + &
-                   c3y * (u(i,j,k+3) + u(i,j,k-2)) + &
+                   c3y * (u(i,j,k+3) + u(i,j,k-3)) + &
                    c4y * (u(i,j,k+4) + u(i,j,k-4))
       end do
     end do
