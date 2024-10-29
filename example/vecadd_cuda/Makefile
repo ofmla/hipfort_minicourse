@@ -33,4 +33,3 @@ $(TARGET): $(OBJ_CU) $(OBJ_F90)
 # Clean target to remove object files and the binary
 clean:
 	rm -f $(TARGET) $(OBJ_F90) $(OBJ_CU)
-i
