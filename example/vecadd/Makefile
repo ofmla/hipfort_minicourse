@@ -3,7 +3,7 @@
 build: main
 
 main:
-	$(FC) $(CFLAGS) main.f90 hip_implementation.cpp -I/opt/rocm/include -o main 
+	$(FC) $(CFLAGS) -Wno-deprecated-declarations main.f90 hip_implementation.cpp -I/opt/rocm/include -o main 
 
 run: main
 	./main
