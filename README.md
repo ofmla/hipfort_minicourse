@@ -21,21 +21,36 @@ A `def file` is provided to help you build a custom container for running the ex
 You can build the apptainer image, with the following command
 
 ```shell
-apptainer build --warn-unused-build-args container_hipfort_minicourse.sif rocky8_cuda_hip.def
+$ apptainer build --warn-unused-build-args container_hipfort_minicourse.sif rocky8_cuda_hip.def
 ```
 
-… then wait for apptainer to build an image for our apps (it might tight a take).
+… then wait for apptainer to build an image for our minicourse apps (it might tight a take).
 
 > Make sure apptainer is installed on your machine.
 
+## Run example
+
+After logging into the cluster, use the `salloc` command to allocate one node with GPUs, and then `ssh` to the allocated node for processing:
+```shell
+$ salloc -N 1 -A <account> -p <group of nodes that have GPUs>
+$ ssh username@allocated_node
+$ cd path_to_folder_with_apptainer_image
+```
 ### Run the container
 
-To run all the codes from the appatiner image use
+To run all the codes from the apptainer image use
 
 ```shell
-apptainer shell --nv container_hipfort_minicourse.sif
+$ apptainer shell --nv container_hipfort_minicourse.sif
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$
 ```
-
+Enter to the `example` folder and use `make` to compile the program, i.e., for the `veacadd` subfolder 
+```shell
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ cd example/vecadd
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ FC=/usr/local/hipfort/bin/hipfc make
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ ./main
+-- Running test 'vecadd' (Fortran 2008 interfaces)- device: Tesla V100-SXM2-32GB -  PASSED!
+```
 ## License
 
 These materials are for a course intended to provide a briew introduction to hipfort. The course is aimed at a scientific audience. Comments, corrections, and additions are welcome.
