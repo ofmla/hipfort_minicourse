@@ -51,6 +51,14 @@ Enter to the `example` folder and use `make` to compile the program, i.e., for t
 <container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ ./main
 -- Running test 'vecadd' (Fortran 2008 interfaces)- device: Tesla V100-SXM2-32GB -  PASSED!
 ```
+Alternatively you can use [CMake](https://cmake.org/) for building the `laplacian` and `tensoradd` examples
+```shell
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ export HIP_PLATFORM=nvidia
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ export HIPFORT_ROOT=/usr/local/hipfort/
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ FC=/usr/local/hipfort/bin/hipfc cmake -B _build -DCMAKE_INSTALL_MESSAGE=LAZY -DCMAKE_VERBOSE_MAKEFILE=OFF -DCMAKE_RULE_MESSAGES=OFF -DCMAKE_INSTALL_PREFIX=${PWD} -DCMAKE_BUILD_TYPE=Release -Dhip_DIR=/opt/rocm/lib/cmake/hip
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ cmake --build _build
+<container_hipfort_minicourse.sif>[username@allocated_node hipfort_minicourse]$ cmake --install _build
+```
 ## License
 
 These materials are for a course intended to provide a briew introduction to hipfort. The course is aimed at a scientific audience. Comments, corrections, and additions are welcome.
